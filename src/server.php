@@ -12,6 +12,9 @@ class OTP {
 
     public function generateSecret() {
         $totp = TOTP::generate($this->clock);
+        $totp->setPeriod(30);
+        $totp->setDigest('sha256');
+        $totp->setDigits(6);
         return $totp->getSecret();
     }
 
