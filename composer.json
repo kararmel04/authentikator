@@ -1,5 +1,6 @@
 {
     "require": {
-        "spomky-labs/otphp": "^11.5"
+        "spomky-labs/otphp": "^11.5",
+        "chillerlan/php-qrcode": "^6.0"
     }
 }
