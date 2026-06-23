@@ -1,8 +1,18 @@
 <!DOCTYPE html>
 <html>
     <!-- <script src="formulaire.js"></script> -->
+     <head>
+        <script src="qrcode_display.js"></script>
+        <script src="formulaire.js"></script>
+     </head>
     <body>
-        <img id="qr" alt="QR Code OTP" height="100px" width="100px">
+        <img id="qr" alt="voir le QR code" title="QR Code OTP" height="100px" width="100px">
+        <form method="post">
+        <label for="login">login</label><br>
+        <input type="text" id="login" name="login"><br>
+        <label for="password">password</label><br>
+        <input type="password" id="password" name="password"><br>
+        <input type="submit" value="Submit"><br>
+    </form>
     </body>
-    <script src="qrcode_display.js"></script>
 </html>

@@ -2,6 +2,8 @@
 
 require 'OTP.php';
 
+//print_r($_POST);
+
 $otp = new OTP();
 $data = $otp->generateSecretAndQRCode("toto"); // à stocker en BDD
 
