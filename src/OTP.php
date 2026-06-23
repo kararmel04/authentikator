@@ -37,4 +37,9 @@ class OTP {
             'qrcode' => $qrcode
         ];
     }
+
+    public static function verifyCode($secret, $code) {
+        $totp = TOTP::createFromSecret($secret);
+        return $totp->verify($code);
+    }
 }
