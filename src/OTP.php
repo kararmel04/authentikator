@@ -5,17 +5,23 @@ require __DIR__ . '/../vendor/autoload.php';
 use OTPHP\TOTP;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use OTPHP\InternalClock;
 
 class OTP {
 
+    static private $clock;
+
     public function generateSecretAndQRCode($username) {
+
+        $clock = (new InternalClock());
 
         // Création du TOTP
         $totp = TOTP::create(
             secret: null,
             period: 30,
             digits: 6,
-            digest: 'sha256'
+            digest: 'sha256',
+            clock: $clock,
         );
 
         $totp->setLabel($username);        // pseudo du client/vendeur
@@ -39,7 +45,16 @@ class OTP {
     }
 
     public static function verifyCode($secret, $code) {
-        $totp = TOTP::createFromSecret($secret);
-        return $totp->verify($code);
+        try{
+            $totp = TOTP::createFromSecret($secret, $clock);
+            //return $totp->verify($code, null, 10);
+            return [$totp->now(), $code, $totp->verify($code, null, 20), $clock];
+        }
+        catch(InvalidParameterException $e) {
+            return $e->getMessage();
+        }
+        catch(Exception $e) {
+            return $e->getMessage();
+        }
     }
 }
