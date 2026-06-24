@@ -13,15 +13,12 @@ class OTP {
 
     public function generateSecretAndQRCode($username) {
 
-        $clock = (new InternalClock());
-
         // Création du TOTP
         $totp = TOTP::create(
             secret: null,
             period: 30,
             digits: 6,
             digest: 'sha256',
-            clock: $clock,
         );
 
         $totp->setLabel($username);        // pseudo du client/vendeur
@@ -46,9 +43,13 @@ class OTP {
 
     public static function verifyCode($secret, $code) {
         try{
-            $totp = TOTP::createFromSecret($secret, $clock);
-            //return $totp->verify($code, null, 10);
-            return [$totp->now(), $code, $totp->verify($code, null, 20), $clock];
+            $totp = TOTP::create( // on doit mettre exactement les mêmes params qu'à la création
+                secret: $secret,
+                period: 30,
+                digits: 6,
+                digest: 'sha256'
+            );
+            return [$totp->now(), $code, $totp->verify($code, null, 1), $clock]; // window à 1 pour la tolérance
         }
         catch(InvalidParameterException $e) {
             return $e->getMessage();
