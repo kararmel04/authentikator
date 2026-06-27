@@ -18,7 +18,7 @@ class OTP {
             secret: null,
             period: 30,
             digits: 6,
-            digest: 'sha256',
+            digest: 'sha1',
         );
 
         $totp->setLabel($username);        // pseudo du client/vendeur
@@ -41,15 +41,43 @@ class OTP {
         ];
     }
 
+    public function generateQRCodeFromSecret($username, $secret){
+        // Création du TOTP
+        $totp = TOTP::create(
+            secret: $secret,
+            period: 30,
+            digits: 6,
+            digest: 'sha1',
+        );
+
+        $totp->setLabel($username);        // pseudo du client/vendeur
+        $totp->setIssuer("AuthentikATOR"); // j'avais pas d'inspi
+
+        $uri = $totp->getProvisioningUri();
+
+        // Génération du QR Code en base64
+        $options = new QROptions([
+            'outputType' => 'png', // pour l'affichage sinon EXPLOSION
+            'scale' => 5,
+        ]);
+
+        $qrcode = (new QRCode($options))->render($uri);
+
+        return [
+            'secret' => $secret,
+            'qrcode' => $qrcode
+        ];
+    }
+
     public static function verifyCode($secret, $code) {
         try{
             $totp = TOTP::create( // on doit mettre exactement les mêmes params qu'à la création
                 secret: $secret,
                 period: 30,
                 digits: 6,
-                digest: 'sha256'
+                digest: 'sha1'
             );
-            return [$totp->now(), $code, $totp->verify($code, null, 1), $clock]; // window à 1 pour la tolérance
+            return $totp->verify($code, null, 1);
         }
         catch(InvalidParameterException $e) {
             return $e->getMessage();
